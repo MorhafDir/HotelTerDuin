@@ -1,0 +1,25 @@
+﻿@page "/login"
+@using HotelTerDuin.Data
+@inject LoginService login
+
+Username <input type="text" @bind="@User"/><br/>
+Password <input type="text" @bind="@Password"/><br/>
+<button @onclick="LoginFunc">Log in</button> @ResultOfLogin
+
+@code {
+
+    private string? User { get; set; }
+
+    private string? Password { get; set; }
+
+    private string? ResultOfLogin { get; set; }
+
+    void LoginFunc()
+    {
+        if (User != null && Password != null)
+        {
+            ResultOfLogin = login.Login(User, Password) ?
+            "logged in" : "not logged in";
+        }
+    }
+}
