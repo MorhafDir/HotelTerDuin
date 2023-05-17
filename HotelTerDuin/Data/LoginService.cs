@@ -6,7 +6,7 @@ namespace HotelTerDuin.Data
     public class LoginService
     {
         string server = "localhost";
-        string database = "vinylshop2";
+        string database = "vinylshop";
         string uid = "root";
         string password = "";
 

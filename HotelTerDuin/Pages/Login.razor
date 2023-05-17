@@ -6,6 +6,10 @@ Username <input type="text" @bind="@User"/><br/>
 Password <input type="text" @bind="@Password"/><br/>
 <button @onclick="LoginFunc">Log in</button> @ResultOfLogin
 
+<button @onclick="RegisterFunc">Register</button> @ResultOfRegister
+
+
+
 @code {
 
     private string? User { get; set; }
@@ -14,12 +18,25 @@ Password <input type="text" @bind="@Password"/><br/>
 
     private string? ResultOfLogin { get; set; }
 
+
+    private string? ResultOfRegister { get; set; }
+
     void LoginFunc()
     {
         if (User != null && Password != null)
         {
             ResultOfLogin = login.Login(User, Password) ?
             "logged in" : "not logged in";
+        }
+    }
+
+
+    void RegisterFunc()
+    {
+        if (User != null && Password != null)
+        {
+            login.Register(User, Password);
+            ResultOfRegister = "registered";
         }
     }
 }
