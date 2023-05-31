@@ -1,32 +1,66 @@
 ﻿@page "/contact"
+@using HotelTerDuin.Data
+@inject DatabaseConnection GetConnection
+@inject DatabaseContact PushContact
+@using System.Net.Mail
 
-<PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<h3>Contact Information</h3>
 
-<p role="status">Current count: @currentCount</p>
+<p>
+    Hotel TerDuin<br>
+    Address: 123 Main Street, City, Country<br>
+    Telephone: +1 234 567 890<br>
+    Email: info@hotelterduin.com<br>
+</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-<button class="btn btn-primary" @onclick="Weg">Weg met Hamood</button>
+<p>
+    Postal Address:<br>
+    P.O. Box 4567, City, Country<br>
+</p>
 
-@name
+<h3>Contact Form</h3>
 
-@name
+@if (isSubmitted)
+{
+    <p>Thank you for contacting us!</p>
+}
+else
+{
+    <form>
+        <div class="form-group">
+            <label for="voornaam">Voornaam:</label>
+            <input type="text" class="form-control" id="voornaam" @bind="@naam">
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" @bind="@email">
+        </div>
+        <div class="form-group">
+            <label for="vraag">Vraag:</label>
+            <textarea class="form-control" id="vraag" rows="3" @bind="@vraag"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" @onclick="SubmitForm">Submit</button>
+    </form>
+}
 
-@name
+
 
 @code {
-    private int currentCount = 0;
+    private string naam;
+    private string email;
+    private string vraag;
+    private bool isSubmitted;
 
-    private string name = "Hamood";
-
-    private void IncrementCount()
+    private void SubmitForm()
     {
-        currentCount++;
-    }
+        // Create an instance of DatabaseContact and call PushContact
+        var databaseContact = new DatabaseContact();
+        databaseContact.PushContact(naam, email, vraag);
 
-    private void Weg()
-    {
-        name = "Bert";
-    }
+         
+
+            // Mark the form as submitted
+            isSubmitted = true;
+        }
 }

@@ -1,6 +1,8 @@
 ﻿@page "/login"
 @using HotelTerDuin.Data
+@inject DatabaseConnection GetConnection
 @inject LoginService login
+@inject LoginService register
 
 Username <input type="text" @bind="@User"/><br/>
 Password <input type="text" @bind="@Password"/><br/>
