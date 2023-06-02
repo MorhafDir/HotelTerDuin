@@ -1,44 +1,87 @@
 ﻿@page "/login"
 @using HotelTerDuin.Data
 @inject DatabaseConnection GetConnection
-@inject LoginService login
-@inject LoginService register
-
-Username <input type="text" @bind="@User"/><br/>
-Password <input type="text" @bind="@Password"/><br/>
-<button @onclick="LoginFunc">Log in</button> @ResultOfLogin
-
-<button @onclick="RegisterFunc">Register</button> @ResultOfRegister
+@inject LoginService loginService
 
 
+<h4>Logged-In User Details:</h4>
+@if (LoggedInUser != null)
+{
+    <p>Username: @LoggedInUser.Username</p>
+    <p>Is Admin: @LoggedInUser.IsAdmin</p>
+}
+else
+{
+    <p>No user logged in.</p>
+}
 
 @code {
-
-    private string? User { get; set; }
-
-    private string? Password { get; set; }
-
-    private string? ResultOfLogin { get; set; }
-
-
-    private string? ResultOfRegister { get; set; }
+    private string User { get; set; }
+    private string Password { get; set; }
+    private string ResultOfLogin { get; set; }
+    private string ResultOfRegister { get; set; }
+    private string LoggedInUser { get; set; }
 
     void LoginFunc()
     {
-        if (User != null && Password != null)
+        bool isAdmin;
+
+        if (loginService.Login(User, Password, out isAdmin))
         {
-            ResultOfLogin = login.Login(User, Password) ?
-            "logged in" : "not logged in";
+            if (isAdmin)
+            {
+                ResultOfLogin = "Logged in as Admin";
+            }
+            else
+            {
+                ResultOfLogin = "Logged in as Customer";
+            }
+
+            LoggedInUser = GetLoggedInUserDetails(User); // Retrieve the user details from the database
+        }
+        else
+        {
+            ResultOfLogin = "Login failed";
+            LoggedInUser = null; // Reset the logged-in user details
         }
     }
 
-
     void RegisterFunc()
     {
-        if (User != null && Password != null)
+        if (!string.IsNullOrEmpty(User) && !string.IsNullOrEmpty(Password))
         {
-            login.Register(User, Password);
-            ResultOfRegister = "registered";
+            loginService.Register(User, Password);
+            ResultOfRegister = "Registered";
         }
+    }
+
+    public string GetLoggedInUserDetails(string username)
+    {
+        // Retrieve the user details from the database based on the username
+        // You need to implement this method based on your database schema and data access logic
+        // Return a User object with the retrieved details or null if the user is not found
+
+        // Example implementation:
+         using (var connection = DatabaseConnection.GetConnection())
+         {
+             using (var command = connection.CreateCommand())
+            {
+                 command.CommandText = "SELECT * FROM klant WHERE voornaam = @username";
+                 command.Parameters.AddWithValue("@username", username);
+                 using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                     {
+                         return new User
+                         {
+                             Username = reader.GetString("voornaam"),
+                             IsAdmin = reader.GetBoolean("admin")
+                         };
+                    }
+                 }
+             }
+        }
+
+        return null; // User not found
     }
 }
